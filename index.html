@@ -19,7 +19,7 @@
   <div class="panel">
     <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose images to check">
       Drop images here, or click to choose
-      <span class="hint">Ideally use the file exactly as the customer sent it: Slack and email often (but not always) strip the evidence.</span>
+      <span class="hint">Ideally use the file exactly as the customer sent it. Slack and email often (but not always) strip the evidence.</span>
       <input id="fileInput" type="file" accept="image/*,.heic,.heif,.avif" multiple />
     </div>
     <p class="note" id="statusNote">Loading verifier...</p>
@@ -29,9 +29,7 @@
   <button id="clearBtn" class="secondary" hidden>Clear all results</button>
 
   <footer>
-    Verdicts come from cryptographically signed Content Credentials (C2PA) where present, plus file metadata.
-<!--     No result here suggest that an image is genuine: missing evidence is only "inconclusive". -->
-    <span id="trustDate"></span>
+    Verdicts come from cryptographically signed Content Credentials (C2PA) where present, plus file metadata. No result here suggests that an image is genuine: missing evidence is only "inconclusive". <span id="trustDate"></span>
   </footer>
 </div>
 
