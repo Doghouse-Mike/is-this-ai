@@ -14,12 +14,12 @@
 <body>
 <div class="wrap">
   <h1>Is this AI?</h1>
-  <p class="sub">Check whether an image was AI-generated or edited, and get a PDF report you can attach to a dispute. Images are never uploaded: everything runs in your browser and nothing is saved once you close the tab.</p>
+  <p class="sub">Check whether an image was AI-generated or edited, and get a PDF report. Images are never uploaded: everything runs in your browser and nothing is saved once you close the tab.</p>
 
   <div class="panel">
     <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose images to check">
       Drop images here, or click to choose
-      <span class="hint">Use the file exactly as the customer sent it: Slack, WhatsApp and email often strip the evidence.</span>
+      <span class="hint">Ideally use the file exactly as the customer sent it: Slack and email often (but not always) strip the evidence.</span>
       <input id="fileInput" type="file" accept="image/*,.heic,.heif,.avif" multiple />
     </div>
     <p class="note" id="statusNote">Loading verifier...</p>
@@ -30,7 +30,7 @@
 
   <footer>
     Verdicts come from cryptographically signed Content Credentials (C2PA) where present, plus file metadata.
-    No result here proves an image is genuine: missing evidence is only ever "inconclusive".
+<!--     No result here suggest that an image is genuine: missing evidence is only "inconclusive". -->
     <span id="trustDate"></span>
   </footer>
 </div>
