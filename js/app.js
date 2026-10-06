@@ -2,8 +2,11 @@
 // Images and results live only in this tab's memory. Nothing is logged,
 // stored or sent anywhere; "Clear" and closing the tab discard everything.
 
-import { analyse, initVerifier } from "./analyse.js";
-import { buildReportPdf, VERDICTS } from "./report-pdf.js";
+// The analysis and PDF modules are imported dynamically so that if anything
+// blocks them (ad/tracker blockers match on file names: uBlock's default lists
+// blocked this file when it was called "analyse.js"), the page says so
+// instead of silently never starting.
+let mod = null;
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -35,7 +38,11 @@ const slowTimer = setTimeout(() => {
   statusNote.classList.add("err");
 }, 20000);
 
-const ready = initVerifier()
+const ready = Promise.all([import("./provenance.js"), import("./report-pdf.js")])
+  .then(([provenance, report]) => {
+    mod = { ...provenance, ...report };
+    return mod.initVerifier();
+  })
   .then(([, ctx]) => {
     trust = ctx.trust;
     trustDate.textContent = `Trust list checked ${trust.checked}, last changed ${trust.changed}.`;
@@ -43,7 +50,9 @@ const ready = initVerifier()
     statusNote.classList.remove("err");
   })
   .catch((e) => {
-    statusNote.textContent = `The verifier failed to load (${e.message}). Content Credentials can't be checked in this browser.`;
+    statusNote.textContent = mod
+      ? `The verifier failed to load (${e.message}). Content Credentials can't be checked in this browser.`
+      : `Part of this page was blocked from loading (${e.message}). This is usually an ad or tracker blocker: turn it off for this site and reload.`;
     statusNote.classList.add("err");
   })
   .finally(() => clearTimeout(slowTimer));
@@ -63,7 +72,7 @@ function table(rows, mono = false) {
 
 function renderResult(card, r) {
   card.replaceChildren();
-  const v = VERDICTS[r.verdict];
+  const v = mod.VERDICTS[r.verdict];
   card.append(
     el("div", { class: "result-head" }, el("span", { class: "result-name" }, r.name)),
     el("div", { class: `verdict ${r.verdict}` }, el("div", { class: "tag" }, v.label), el("div", { class: "head" }, r.headline)),
@@ -107,7 +116,7 @@ function renderResult(card, r) {
   pdfBtn.addEventListener("click", async () => {
     pdfBtn.disabled = true;
     try {
-      download(await buildReportPdf(r, trust), `${r.name.replace(/\.[^.]+$/, "")}-provenance-report.pdf`);
+      download(await mod.buildReportPdf(r, trust), `${r.name.replace(/\.[^.]+$/, "")}-provenance-report.pdf`);
     } catch (e) {
       pdfBtn.textContent = `PDF failed: ${e.message}`;
     } finally {
@@ -132,9 +141,14 @@ function addFiles(list) {
     queue = queue.then(async () => {
       await ready;
       if (!card.isConnected) return;
+      if (!mod) {
+        card.querySelector(".result-status").textContent = "can't check: the page didn't fully load";
+        card.dataset.verdict = "error";
+        return;
+      }
       card.querySelector(".result-status").textContent = "checking...";
       try {
-        const r = await analyse(file);
+        const r = await mod.analyse(file);
         if (!card.isConnected) return;
         renderResult(card, r);
         card.dataset.verdict = r.verdict;

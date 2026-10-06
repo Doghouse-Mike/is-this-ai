@@ -94,6 +94,15 @@ The EKU file matters: without it, `c2pa-web` rejects OpenAI's signing
 certificate as "missing required EKU" and reports ChatGPT images as
 **Invalid** rather than **Trusted**.
 
+## Ad blockers
+
+uBlock Origin's default lists block URLs that look like analytics, and they
+blocked this site's analysis module when it was called `analyse.js`, leaving
+the page stuck on "Loading verifier...". It's now `provenance.js`. Keep file
+names away from words like *analytics*, *analyse*, *track*, *stats*, *beacon*
+and *pixel*. The modules are loaded so that a blocked file shows an error
+straight away instead of hanging.
+
 ## Running and testing locally
 
 Any static file server works (the WebAssembly binary needs to be served as
@@ -118,4 +127,4 @@ No build step: everything in `vendor/` is checked in.
 - `pdf-lib` (MIT), for the report PDF (same copy as invoice-vat-stamper).
 
 To upgrade `c2pa-web`, copy the new `dist/` in, re-apply the `highgain` import
-rewrite, update `C2PA_WEB_VERSION` in `js/analyse.js`, and run `npm test`.
+rewrite, update `C2PA_WEB_VERSION` in `js/provenance.js`, and run `npm test`.

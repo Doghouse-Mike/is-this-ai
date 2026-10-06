@@ -2,7 +2,7 @@
 // Nothing is uploaded: the PDF is assembled in memory and handed to the
 // browser's download.
 
-import { C2PA_WEB_VERSION } from "./analyse.js";
+import { C2PA_WEB_VERSION } from "./provenance.js";
 
 const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
 
