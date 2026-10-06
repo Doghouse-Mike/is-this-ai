@@ -14,12 +14,12 @@
 <body>
 <div class="wrap">
   <h1>Is this AI?</h1>
-  <p class="sub">Check whether an image was AI-generated or edited, and get a PDF report. Images are never uploaded: everything runs in your browser and nothing is saved once you close the tab.</p>
+  <p class="sub">Check whether an image was AI-generated or edited, and get a PDF report. Images are never saved anywhere, everything runs in your browser and once the tab is closed it all goes away.</p>
 
   <div class="panel">
     <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose images to check">
       Drop images here, or click to choose
-      <span class="hint">Ideally use the file exactly as the customer sent it. Slack and email often (but not always) strip the evidence.</span>
+      <span class="hint">Ideally use the file exactly as it was sent. Slack and email often (but not always) strip the evidence.</span>
       <input id="fileInput" type="file" accept="image/*,.heic,.heif,.avif" multiple />
     </div>
     <p class="note" id="statusNote">Loading verifier...</p>
