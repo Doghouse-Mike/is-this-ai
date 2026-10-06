@@ -1,0 +1,12 @@
+{
+  "name": "image-provenance-web",
+  "private": true,
+  "type": "module",
+  "description": "In-browser image provenance checker (C2PA + metadata). Static site; no build step.",
+  "scripts": {
+    "test": "node tests/run.mjs"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^24.0.0"
+  }
+}

@@ -1,0 +1,4 @@
+node_modules/
+spike/
+tests/fixtures/
+tests/out/

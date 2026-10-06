@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!-- Privacy: the page may only load its own files. connect-src 'self' means
+     no image, result or telemetry can be sent anywhere, even by a bug. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src blob:; connect-src 'self'; img-src 'self' blob: data:; style-src 'self'; base-uri 'none'; form-action 'none'" />
+<meta name="referrer" content="no-referrer" />
+<title>Image Provenance Checker</title>
+<link rel="icon" href="data:," />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="wrap">
+  <h1>Image Provenance Checker</h1>
+  <p class="sub">Check whether an image was AI-generated or edited, and get a PDF report you can attach to a dispute. Images are never uploaded: everything runs in your browser and nothing is saved once you close the tab.</p>
+
+  <div class="panel">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose images to check">
+      Drop images here, or click to choose
+      <span class="hint">Use the file exactly as the customer sent it: Slack, WhatsApp and email often strip the evidence.</span>
+      <input id="fileInput" type="file" accept="image/*,.heic,.heif,.avif" multiple />
+    </div>
+    <p class="note" id="statusNote">Loading verifier...</p>
+  </div>
+
+  <div id="results"></div>
+  <button id="clearBtn" class="secondary" hidden>Clear all results</button>
+
+  <footer>
+    Verdicts come from cryptographically signed Content Credentials (C2PA) where present, plus file metadata.
+    No result here proves an image is genuine: missing evidence is only ever "inconclusive".
+    <span id="trustDate"></span>
+  </footer>
+</div>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
