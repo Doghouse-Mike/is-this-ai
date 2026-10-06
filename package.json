@@ -1,5 +1,5 @@
 {
-  "name": "image-provenance-web",
+  "name": "is-this-ai",
   "private": true,
   "type": "module",
   "description": "In-browser image provenance checker (C2PA + metadata). Static site; no build step.",
