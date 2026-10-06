@@ -26,16 +26,27 @@ function el(tag, attrs = {}, ...children) {
   return node;
 }
 
+// The verifier normally starts in well under a second. If it hasn't after 20s
+// it is almost always a browser extension blocking its worker, or a page
+// half-loaded mid-deploy; say so rather than sit on "Loading" forever. If it
+// does start later, the success handler below clears the warning.
+const slowTimer = setTimeout(() => {
+  statusNote.textContent = "The verifier hasn't started. Try reloading (Ctrl+Shift+R). If it still won't load, a browser extension may be blocking it: try a private window, or turn off ad/tracker blockers for this site.";
+  statusNote.classList.add("err");
+}, 20000);
+
 const ready = initVerifier()
   .then(([, ctx]) => {
     trust = ctx.trust;
     trustDate.textContent = `Trust list checked ${trust.checked}, last changed ${trust.changed}.`;
     statusNote.textContent = "Ready. Images stay on this device.";
+    statusNote.classList.remove("err");
   })
   .catch((e) => {
     statusNote.textContent = `The verifier failed to load (${e.message}). Content Credentials can't be checked in this browser.`;
     statusNote.classList.add("err");
-  });
+  })
+  .finally(() => clearTimeout(slowTimer));
 
 function download(bytes, name) {
   const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
