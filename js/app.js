@@ -12,7 +12,7 @@ const statusNote = document.getElementById("statusNote");
 const clearBtn = document.getElementById("clearBtn");
 const trustDate = document.getElementById("trustDate");
 
-let trustFetched = "?";
+let trust = { changed: "?", checked: "?" };
 let queue = Promise.resolve();
 const objectUrls = new Set();
 
@@ -28,8 +28,8 @@ function el(tag, attrs = {}, ...children) {
 
 const ready = initVerifier()
   .then(([, ctx]) => {
-    trustFetched = ctx.trustFetched;
-    trustDate.textContent = `Trust list dated ${trustFetched}.`;
+    trust = ctx.trust;
+    trustDate.textContent = `Trust list checked ${trust.checked}, last changed ${trust.changed}.`;
     statusNote.textContent = "Ready. Images stay on this device.";
   })
   .catch((e) => {
@@ -96,7 +96,7 @@ function renderResult(card, r) {
   pdfBtn.addEventListener("click", async () => {
     pdfBtn.disabled = true;
     try {
-      download(await buildReportPdf(r, trustFetched), `${r.name.replace(/\.[^.]+$/, "")}-provenance-report.pdf`);
+      download(await buildReportPdf(r, trust), `${r.name.replace(/\.[^.]+$/, "")}-provenance-report.pdf`);
     } catch (e) {
       pdfBtn.textContent = `PDF failed: ${e.message}`;
     } finally {

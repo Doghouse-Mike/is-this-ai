@@ -116,7 +116,7 @@ export function initVerifier() {
         verify: { verifyTrust: true },
         trust: { trustAnchors: anchors, trustConfig: ekus },
       });
-      return { context, trustFetched: meta.fetched };
+      return { context, trust: { changed: meta.changed, checked: meta.checked } };
     })();
   }
   return Promise.all([c2paPromise, contextPromise]);

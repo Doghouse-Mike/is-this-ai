@@ -26,7 +26,7 @@ function winAnsi(s) {
     .replace(/[^\x20-\x7e\xa0-\xff\n]/g, (c) => (WINANSI_EXTRA.includes(c) ? c : "?"));
 }
 
-export async function buildReportPdf(r, trustFetched) {
+export async function buildReportPdf(r, trust) {
   const doc = await PDFDocument.create();
   doc.setTitle(`Image provenance report - ${r.name}`);
   doc.setProducer("Image Provenance Checker (in-browser)");
@@ -165,7 +165,7 @@ export async function buildReportPdf(r, trustFetched) {
   table(rows, { valueFont: mono });
 
   heading("Method and limits");
-  text(`Content Credentials (C2PA) were read and cryptographically verified in the browser with c2pa-web ${C2PA_WEB_VERSION} (the Content Authenticity Initiative's WebAssembly build of c2pa-rs) against the C2PA conformance trust list (fetched ${trustFetched}). A valid, trusted signature with a matching data hash means the record was issued by the named signer and the image is unchanged since. Anyone can re-check this independently by uploading the same file to contentcredentials.org/verify.`, { size: 8.5, colour: muted });
+  text(`Content Credentials (C2PA) were read and cryptographically verified in the browser with c2pa-web ${C2PA_WEB_VERSION} (the Content Authenticity Initiative's WebAssembly build of c2pa-rs) against the C2PA conformance trust list (checked ${trust.checked}, last changed ${trust.changed}). A valid, trusted signature with a matching data hash means the record was issued by the named signer and the image is unchanged since. Anyone can re-check this independently by uploading the same file to contentcredentials.org/verify.`, { size: 8.5, colour: muted });
   text("File metadata (EXIF, XMP, PNG text) was also inspected; it is unsigned and supporting only. Missing metadata is never treated as evidence on its own. Invisible watermarks such as SynthID cannot be checked offline, and no pixel-level forensics were performed.", { size: 8.5, colour: muted });
   text("The analysis ran entirely in the examiner's web browser: the image was not uploaded or stored anywhere. The SHA-256 above identifies the exact file examined; keep the original alongside this report.", { size: 8.5, colour: muted });
 

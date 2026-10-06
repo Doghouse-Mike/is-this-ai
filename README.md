@@ -71,7 +71,20 @@ Found by running the local version over 1,000 real images:
 
 The C2PA trust list (`trust/C2PA-TRUST-LIST.pem`) and the allowed certificate
 EKUs (`trust/valid_eku_oids.cfg`) are bundled and served from this site, so
-nothing is fetched from third parties at runtime. Refresh them now and then:
+nothing is fetched from third parties at runtime.
+
+They refresh themselves: `.github/workflows/refresh-trust.yml` runs
+`scripts/update-trust.sh` every Monday and commits any change, which
+redeploys the site. Before committing it checks that every certificate
+parses, that the list hasn't shrunk by more than 20%, and that the EKU file
+still allows C2PA and document-signing certificates. If a check fails,
+nothing is committed and the run fails (GitHub emails the repo owner).
+
+`trust/meta.json` records when the list last **changed** and was last
+**checked**; the page footer and PDF show both. "Checked" is bumped at least
+monthly, which also keeps the schedule alive: GitHub switches scheduled
+workflows off after 60 days without repo activity. To refresh by hand, use
+**Actions → Refresh C2PA trust list → Run workflow**, or locally:
 
 ```sh
 scripts/update-trust.sh && npm test

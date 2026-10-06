@@ -1,0 +1,27 @@
+name: Refresh C2PA trust list
+
+# Weekly: fetch the C2PA trust list and EKU config, sanity-check them, and
+# commit if they changed (or monthly as a keep-alive; see
+# scripts/update-trust.sh). The push redeploys GitHub Pages. If a check fails,
+# nothing is committed and this run fails, which GitHub emails about.
+on:
+  schedule:
+    - cron: "23 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/update-trust.sh
+      - name: Commit and push if anything changed
+        run: |
+          if git diff --quiet; then echo "No changes."; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Refresh C2PA trust list"
+          git push
