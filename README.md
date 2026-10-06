@@ -1,4 +1,4 @@
-# Image Provenance Checker
+# Is this AI?
 
 A tiny static web app: drop in an image (say, a "photo" a customer sent to
 dispute a delivery) and find out whether it was AI-generated or edited, with

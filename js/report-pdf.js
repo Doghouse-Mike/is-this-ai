@@ -29,8 +29,8 @@ function winAnsi(s) {
 export async function buildReportPdf(r, trust) {
   const doc = await PDFDocument.create();
   doc.setTitle(`Image provenance report - ${r.name}`);
-  doc.setProducer("Image Provenance Checker (in-browser)");
-  doc.setCreator("Image Provenance Checker");
+  doc.setProducer("Is this AI? (in-browser)");
+  doc.setCreator("Is this AI?");
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const mono = await doc.embedFont(StandardFonts.Courier);
