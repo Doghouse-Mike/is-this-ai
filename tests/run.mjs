@@ -63,12 +63,25 @@ try {
   const got = await page.$$eval(".result", (cards) => cards.map((c) => ({
     name: c.querySelector(".result-name").textContent, verdict: c.dataset.verdict,
     headline: c.querySelector(".verdict .head")?.textContent || c.querySelector(".result-status")?.textContent,
+    links: [...c.querySelectorAll(".next a")].map((a) => new URL(a.href).hostname),
   })));
   for (const g of got) {
     const ok = g.verdict === expected[g.name];
     console.log(`${ok ? "ok  " : "FAIL"} ${g.name.padEnd(36)} ${g.verdict.padEnd(13)} ${g.headline}`);
     if (!ok) failures.push(`${g.name}: expected ${expected[g.name]}, got ${g.verdict}`);
   }
+
+  // Next-step links: SynthID wherever credentials don't settle it, never for
+  // a signed camera capture.
+  const before = failures.length;
+  const SYNTHID = { "door-slack.png": true, "door-original.png": true, "chatgpt-stripped.png": true, "pixel.jpg": false };
+  for (const [name, want] of Object.entries(SYNTHID)) {
+    const g = got.find((x) => x.name === name);
+    if (!g) continue;
+    const has = g.links.includes("synthid.com");
+    if (has !== want) failures.push(`${name}: SynthID link ${want ? "missing" : "unexpected"} (links: ${g.links.join(", ")})`);
+  }
+  if (failures.length === before) console.log("ok   next-step links checked");
 
   // PDF: download the first card's report and check it reads back.
   await page.click(".result .actions button");

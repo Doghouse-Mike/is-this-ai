@@ -81,10 +81,10 @@ export const FURTHER = {
     url: "https://openai.com/research/verify/",
     text: "Checks for OpenAI's Content Credentials and its SynthID watermark, which survives screenshots, cropping and metadata stripping. Recommended for any image suspected to come from ChatGPT.",
   },
-  gemini: {
-    title: "Gemini (SynthID)",
-    url: "https://gemini.google.com/app",
-    text: "Upload the image and ask “Was this made with Google AI?”. Gemini checks for Google's SynthID watermark.",
+  synthid: {
+    title: "SynthID Detector (Google)",
+    url: "https://synthid.com/",
+    text: "Google's official watermark checker (sign-in required). Detects the invisible SynthID watermark added by Google, OpenAI (ChatGPT), NVIDIA and Kakao AI tools, which survives screenshots, cropping, compression and metadata stripping, so it still works on copies that went through Slack or email. A clean result only means none of those tools marked the image, not that it is real.",
   },
   cc: {
     title: "Content Credentials Verify",
@@ -371,8 +371,11 @@ export async function analyse(file) {
 
   const who = c2pa ? `${c2pa.signer} ${c2pa.generator}`.toLowerCase() : "";
   const further = [];
+  // SynthID covers Google and its partners (OpenAI, NVIDIA, Kakao), so it's the
+  // first check whenever the credentials don't already settle the question.
+  // Not for signed camera captures: every Pixel photo is signed by Google.
+  if (!c2pa || verdict === "ai" || (verdict !== "capture" && /google|openai|nvidia|kakao/.test(who))) further.push(FURTHER.synthid);
   if (!c2pa || who.includes("openai")) further.push(FURTHER.openai);
-  if (!c2pa || who.includes("google")) further.push(FURTHER.gemini);
   further.push(FURTHER.cc);
   if (!c2pa) further.push(FURTHER.original);
 

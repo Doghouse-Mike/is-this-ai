@@ -20,8 +20,8 @@ or more images on it. Each image gets:
   and the plain-English reasoning behind it;
 - the signed history and signature details, when the file has Content
   Credentials;
-- one-click links to the online checks that apply (OpenAI's verifier, Gemini's
-  SynthID check, Content Credentials Verify). Those services do receive a copy
+- one-click links to the online checks that apply (Google's SynthID Detector,
+  OpenAI's verifier, Content Credentials Verify). Those services do receive a copy
   of anything you upload to them, so that step is always manual;
 - **Download PDF report**: the same findings plus the file's SHA-256, so the
   report can be tied to the exact file examined.
@@ -63,8 +63,10 @@ Found by running the local version over 1,000 real images:
 
 ### Things it can't do
 
-- **SynthID** (Google, and OpenAI since May 2026) has no public offline
-  detector. The report links to OpenAI's and Google's online checks instead.
+- **SynthID** has no offline detector. Google's public SynthID Detector
+  (synthid.com, open to everyone since 7 October 2026, sign-in required)
+  covers Google, OpenAI, NVIDIA and Kakao AI tools, so the page links to it
+  rather than checking itself: that would mean uploading the image.
 - No pixel-level forensics. An image with no metadata is "inconclusive".
 
 ## Trust list
