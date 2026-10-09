@@ -1,0 +1,51 @@
+name: Check for a new c2pa-web release
+
+# Monthly: compare the vendored c2pa-web version with the latest on npm and
+# open an issue (once per version) if there's a newer one. It never upgrades
+# by itself: upgrades can change verification behaviour (the "missing
+# required EKU" problem came from the library, not the trust list), so they
+# need the full `npm test` run against the local fixtures first.
+on:
+  schedule:
+    - cron: "41 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare versions and open an issue if behind
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(sed -n 's/^export const C2PA_WEB_VERSION = "\(.*\)";$/\1/p' js/provenance.js)
+          latest=$(npm view @contentauth/c2pa-web version)
+          echo "vendored: $current, latest: $latest"
+          [ -n "$current" ] && [ -n "$latest" ] || { echo "could not read versions" >&2; exit 1; }
+          [ "$current" = "$latest" ] && exit 0
+          title="c2pa-web $latest is available (site uses $current)"
+          if gh issue list --state open --search "\"c2pa-web $latest\" in:title" --json number -q '.[].number' | grep -q .; then
+            echo "issue already open"; exit 0
+          fi
+          gh issue create --title "$title" --body "$(cat <<EOF
+          A newer \`@contentauth/c2pa-web\` is on npm: **$latest** (the site vendors **$current**).
+
+          - Release notes: https://github.com/contentauth/c2pa-js/releases
+          - npm: https://www.npmjs.com/package/@contentauth/c2pa-web
+
+          Nothing has been changed automatically. To upgrade (see README, "Vendored libraries"):
+
+          1. \`npm pack @contentauth/c2pa-web@$latest\` and copy its \`dist/\` over \`vendor/c2pa-web/\` (drop the \`.d.ts\` files, \`lib/\`, \`inline.js\` and \`c2pa_worker.js\`).
+          2. Re-apply the import rewrite: \`from "highgain"\` → \`from "../highgain/index.js"\` in \`vendor/c2pa-web/c2pa-*.js\`, and update \`highgain\` if the new version needs a newer one.
+          3. Set \`C2PA_WEB_VERSION\` in \`js/provenance.js\` to \`$latest\`.
+          4. Run \`npm test\` on the machine with the fixtures. It must still report the OpenAI images as **Trusted**, not Invalid.
+          5. Commit and push; close this issue.
+
+          No rush unless the release notes mention verification or trust fixes: the current version works.
+          EOF
+          )"

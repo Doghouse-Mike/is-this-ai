@@ -128,5 +128,9 @@ No build step: everything in `vendor/` is checked in.
 - `exifr` 7.1.3 (MIT), the full ESM build, for EXIF.
 - `pdf-lib` (MIT), for the report PDF (same copy as invoice-vat-stamper).
 
+`.github/workflows/check-c2pa-web.yml` checks npm on the 1st of each month
+and opens a GitHub issue (once per version) with these steps when a newer
+`c2pa-web` is out. It never upgrades by itself.
+
 To upgrade `c2pa-web`, copy the new `dist/` in, re-apply the `highgain` import
 rewrite, update `C2PA_WEB_VERSION` in `js/provenance.js`, and run `npm test`.
